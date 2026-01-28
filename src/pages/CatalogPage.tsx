@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { productService } from '../ProductApi';
 import { Product } from '../types/product';
+import { ProductCard } from '../components/ProductCard';
 
 export const CatalogPage = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,15 +29,9 @@ export const CatalogPage = () => {
   return (
     <div>
       <h1>Products catalog</h1>
-      
       <div>
         {products.map((product) => (
-          <div key={product.id}>
-            <img src={product.image} alt={product.title}/>
-            <h3>{product.title}</h3>
-            <p>{product.description}</p>
-            <p>{product.price} ₽</p>
-          </div>
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </div>
