@@ -1,3 +1,4 @@
+import { useCartStore } from '../store/сartStore';
 import { Product } from '../types/product';
 
 interface ProductCardProps {
@@ -5,6 +6,12 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
+    const addItem = useCartStore((state) => state.addItem);
+
+  const handleAddToCart = () => {
+    addItem(product);
+    alert(`${product.title} was added to cart!`);
+  };
   return (
     <div>
       <img src={product.image} alt={product.title}/>
@@ -13,7 +20,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         <p>{product.description}</p>
         <div>
           <span>{product.price} $</span>
-          <button>Add to cart</button>
+          <button onClick={handleAddToCart}>Add to cart</button>
         </div>
       </div>
     </div>
