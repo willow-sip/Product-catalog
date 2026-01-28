@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { CatalogPage } from './pages/CatalogPage';
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
         </nav>
 
         <Routes>
-          <Route path="/" element={<div>Products catalog</div>} />
+          <Route path="/" element={<CatalogPage />} />
           <Route path="/cart" element={<div>Cart</div>} />
         </Routes>
       </div>
