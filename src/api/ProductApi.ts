@@ -15,5 +15,10 @@ export const productService = {
   async getProductById(id: number): Promise<Product> {
     const response = await api.get<Product>(`/products/${id}`);
     return response.data;
+  },
+
+  async getCategories(): Promise<string[]> {
+    const response = await api.get<string[]>('/products/categories');
+    return response.data;
   }
 };
