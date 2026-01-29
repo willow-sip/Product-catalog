@@ -4,6 +4,8 @@ import { Product } from '../types/product';
 import { ProductCard } from '../components/ProductCard';
 import { Search } from '../components/Search';
 import { Filter } from '../components/Filter';
+import { Sorting } from '../components/Sorting';
+import { Pagination } from '../components/Pagination';
 
 export const CatalogPage = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -11,6 +13,10 @@ export const CatalogPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState('');
+    const [selectedSort, setSelectedSort] = useState<'price-asc' | 'price-desc' | 'name-asc' | 'name-desc'>('price-asc');
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const itemsPerPage = 12;
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -47,6 +53,34 @@ export const CatalogPage = () => {
         return filtered;
     }, [products, searchQuery, selectedCategory]);
 
+    const sortedProducts = useMemo(() => {
+        const sorted = [...filteredProducts];
+
+        switch (selectedSort) {
+            case 'price-asc':
+                sorted.sort((a, b) => a.price - b.price);
+                break;
+            case 'price-desc':
+                sorted.sort((a, b) => b.price - a.price);
+                break;
+            case 'name-asc':
+                sorted.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            case 'name-desc':
+                sorted.sort((a, b) => b.title.localeCompare(a.title));
+                break;
+        }
+
+        return sorted;
+    }, [filteredProducts, selectedSort]);
+
+    const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+    const paginatedProducts = sortedProducts.slice(
+        (currentPage - 1) * itemsPerPage,
+        currentPage * itemsPerPage
+    );
+
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -65,20 +99,32 @@ export const CatalogPage = () => {
                     selectedCategory={selectedCategory}
                     onSelectCategory={setSelectedCategory}
                 />
+
+                <Sorting selectedSort={selectedSort} onSortChange={setSelectedSort} />
             </div>
 
             <p>{filteredProducts.length} product(-s) shown out of {products.length}</p>
 
-            {filteredProducts.length === 0 ? (
+            {sortedProducts.length === 0 ? (
                 <div>
                     <p>Products not found</p>
                 </div>
             ) : (
-                <div>
-                    {filteredProducts.map((product) => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
-                </div>
+                <>
+                    <div>
+                        {paginatedProducts.map((product) => (
+                            <ProductCard key={product.id} product={product} />
+                        ))}
+                    </div>
+
+                    {totalPages > 1 && (
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={setCurrentPage}
+                        />
+                    )}
+                </>
             )}
         </div>
     );
